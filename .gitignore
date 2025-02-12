@@ -1,0 +1,9 @@
+PrivateServer/__pycache__/
+PrivateServer/venv/
+PrivateServer/routers/__pycache__/
+PrivateServer/utils/__pycache__/
+PrivateServer/global_database.db
+uploads/
+PrivateServer/temp.py
+
+FedData/node_modules/
