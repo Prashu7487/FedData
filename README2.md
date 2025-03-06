@@ -33,8 +33,12 @@ tar -xvzf spark-3.4.1-bin-hadoop3.tgz -C ~/spark
 
 Furthure configuration tuning is mentioned in README.md 
 
-after configuring all the settings required, make a file that can run everythign at once
-run nano start-service.sh first then paste this code into the file:
+after configuring all the settings required, let's make a file that can run everything at once
+
+```
+run nano start-services.sh
+```
+paste this into the file:
 
 ```
 #!/bin/bash
@@ -61,7 +65,37 @@ jps
 after this provide execute permission to the owner
 ```
 # to check the permission
-ls -l start-service.sh
+ls -l start-services.sh
 
 # to modify the permission
-chmod 755 start-service.sh
+chmod 755 start-services.sh
+
+similary create bash file for stopping everything:
+```
+run nano stop-services.sh
+```
+
+paste this into the file:
+```
+#!/bin/bash
+
+# Stop Hadoop services
+echo "Stoppping Hadoop services..."
+hadoop/hadoop-3.4.1/sbin/stop-all.sh
+
+# Stop Spark services
+echo "Stopping Spark services..."
+spark/spark-3.4.4-bin-hadoop3/sbin/stop-all.sh
+
+# Check if services are running
+echo "Checking running services..."
+jps
+```
+
+after this provide execute permission to the owner
+```
+# to check the permission
+ls -l stop-services.sh
+
+# to modify the permission
+chmod 755 stop-services.sh
