@@ -90,10 +90,12 @@ WARNING: links may change as per port availability
 
 ```bash
 # make directory tmpuploads, uploads, processed, tmp, data/namenode, data/datanode
-hdfs dfs -mkdir /user/prashu/tmpuploads
-hdfs dfs -mkdir /user/prashu/uploads
-hdfs dfs -mkdir /user/prashu/processed
-hdfs dfs -ls /user/prashu/processed
+hdfs dfs -mkdir /user
+hdfs dfs -mkdir /user/cdis/
+hdfs dfs -mkdir /user/cdis/tmpuploads
+hdfs dfs -mkdir /user/cdis/uploads
+hdfs dfs -mkdir /user/cdis/processed
+hdfs dfs -ls /user/cdis/processed
 hdfs dfs -put /mnt/d/projects/datasets/health.csv /user/prashu/tmpuploads/health.csv # for hadoop on wsl, change accordingly
 hdfs dfs -rm -r /path/to/remove # directory or file, -r for recursive
 
