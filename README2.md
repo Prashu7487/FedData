@@ -31,4 +31,37 @@ mkdir ~/spark
 tar -xvzf spark-3.4.1-bin-hadoop3.tgz -C ~/spark
 ```
 
-Furthure configuration tuning is mentioned in README.md
+Furthure configuration tuning is mentioned in README.md 
+
+after configuring all the settings required, make a file that can run everythign at once
+run nano start-service.sh first then paste this code into the file:
+
+```
+#!/bin/bash
+
+# Start Hadoop services
+echo "Starting Hadoop services..."
+hadoop/hadoop-3.4.1/sbin/start-all.sh
+
+# Wait for Hadoop services to fully start
+#sleep 10
+
+# Start Spark services
+echo "Starting Spark services..."
+spark/spark-3.4.4-bin-hadoop3/start-all.sh
+
+# Wait for all services to start
+#sleep 5
+
+# Check if services are running
+echo "Checking running services..."
+jps
+```
+
+after this provide execute permission to the owner
+```
+# to check the permission
+ls -l start-service.sh
+
+# to modify the permission
+chmod 755 start-service.sh
