@@ -92,7 +92,8 @@ To ensure the HDFS client works correctly, follow these steps:
 Hadoop’s Java configuration is driven by two types of important configuration files:
 - Read-only default configuration - core-default.xml, hdfs-default.xml, yarn-default.xml and mapred-default.xml.
 - Site-specific configuration - etc/hadoop/core-site.xml, etc/hadoop/hdfs-site.xml, etc/hadoop/yarn-site.xml and etc/hadoop/mapred-site.xml.
-
+- NOTE: ubuntu is username (check by whoami)
+  
 ### etc/hadoop/core-site.xml
 
 ```xml
@@ -106,7 +107,7 @@ Hadoop’s Java configuration is driven by two types of important configuration 
     <!-- Temporary directory for Hadoop -->
     <property>
         <name>hadoop.tmp.dir</name>
-        <value>file:///home/prashu/hadoop/hadoop-3.4.1/tmp</value>
+        <value>file:///home/ubuntu/hadoop/hadoop-3.4.1/tmp</value>
     </property>
 </configuration>
 ```
@@ -129,13 +130,13 @@ Hadoop’s Java configuration is driven by two types of important configuration 
     <!-- Directory for NameNode metadata -->
     <property>
         <name>dfs.namenode.name.dir</name>
-        <value>file:///home/prashu/hadoop/hadoop-3.4.1/data/namenode</value>
+        <value>file:///home/ubuntu/hadoop/hadoop-3.4.1/data/namenode</value>
     </property>
 
     <!-- Directory for DataNode blocks -->
     <property>
         <name>dfs.datanode.data.dir</name>
-        <value>file:///home/prashu/hadoop/hadoop-3.4.1/data/datanode</value>
+        <value>file:///home/ubuntu/hadoop/hadoop-3.4.1/data/datanode</value>
     </property>
 </configuration>
 
