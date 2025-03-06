@@ -145,9 +145,9 @@ To ensure the HDFS client works correctly, follow these steps:
 Download Spark from the official website. Choose a version compatible with the Hadoop setup (e.g., Spark 3.4.x for Hadoop 3.4.x).
 
 ```bash
-wget https://downloads.apache.org/spark/spark-3.4.1/spark-3.4.1-bin-hadoop3.tgz
-tar -xvf spark-3.4.1-bin-hadoop3.tgz
-mv spark-3.4.1-bin-hadoop3 ~/spark
+wget https://dlcdn.apache.org/spark/spark-3.4.4/spark-3.4.4-bin-hadoop3.tgz
+mkdir ~/spark
+tar -xvzf spark-3.4.4-bin-hadoop3.tgz -C ~/spark
 ```
 
 ### Environment Variables
