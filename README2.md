@@ -42,7 +42,6 @@ paste this into the file:
 
 ```
 #!/bin/bash
-
 # Start Hadoop services
 echo "Starting Hadoop services..."
 hadoop/hadoop-3.4.1/sbin/start-all.sh
@@ -54,23 +53,23 @@ hadoop/hadoop-3.4.1/sbin/start-all.sh
 echo "Starting Spark services..."
 spark/spark-3.4.4-bin-hadoop3/start-all.sh
 
-# Wait for all services to start
-#sleep 5
-
 # Check if services are running
 echo "Checking running services..."
 jps
 ```
 
 after this provide execute permission to the owner
+
 ```
 # to check the permission
 ls -l start-services.sh
 
 # to modify the permission
 chmod 755 start-services.sh
+```
 
 similary create bash file for stopping everything:
+
 ```
 run nano stop-services.sh
 ```
@@ -99,3 +98,4 @@ ls -l stop-services.sh
 
 # to modify the permission
 chmod 755 stop-services.sh
+```
