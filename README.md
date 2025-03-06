@@ -48,7 +48,7 @@ export HADOOP_MAPRED_HOME=$HADOOP_HOME
 export HADOOP_COMMON_HOME=$HADOOP_HOME
 export HADOOP_HDFS_HOME=$HADOOP_HOME
 export YARN_HOME=$HADOOP_HOME
-export YARN_CONF_DIR=$HADOOP_CONF_DIR
+export YARN_CONF_DIR=$HADOOP_HOME/etc/hadoop
 
 # Adding vars for Spark
 export PYSPARK_PYTHON=~/wslenv/bin/python
