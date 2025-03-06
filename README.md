@@ -234,8 +234,9 @@ export SPARK_LOCAL_IP=127.0.0.1
 # Add the right venv path to be used when spark workers are scheduled (not yet tested)
 export PYSPARK_PYTHON=~/wslenv/bin/python
 export PYSPARK_DRIVER_PYTHON=~/wslenv/bin/python
-
-# clear pyspark cache
+```
+## clear pyspark cache (whenever needed)
+```
 rm -rf ~/hadoop/hadoop-3.4.1/tmp/nm-local-dir/usercache/*
 ```
 
