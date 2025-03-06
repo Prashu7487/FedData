@@ -200,6 +200,11 @@ Hadoop’s Java configuration is driven by two types of important configuration 
 ```
 Additionally, you can control the Hadoop scripts found in the bin/ directory of the distribution, by setting site-specific values via the etc/hadoop/hadoop-env.sh and etc/hadoop/yarn-env.sh (you can write all hadoop specific variables in this file only the precedence order will be variable in xyz-env.sh > hadoop-env.sh > default coded vars)
 
+## set java path in /etc/hadoop/hadoop-env.sh
+```
+JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+```
+
 ## Spark Configuration
 
 ### Installation
