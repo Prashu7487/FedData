@@ -81,7 +81,7 @@ sbin/start-yarn.sh
 
 ### Web Interfaces
 
-WARNING: links may change as per port availability
+WARNING: links may change as per port availability, and use your public IP in place of localhost for deployed cluster
 
 - **YARN ResourceManager**: http://localhost:8088/cluster
 - **HDFS NameNode**: http://localhost:9870/dfshealth.html#tab-overview or 9868 (command `ss -tuln`)
