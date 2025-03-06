@@ -89,8 +89,29 @@ To ensure the HDFS client works correctly, follow these steps:
 5. **WARNING**: Don't do any operation of hdfs file or dir other than from what framework internally does, this may result is meta data mismatch and cause error in future.
 
 ## Hadoop Configuration Files
+Hadoop’s Java configuration is driven by two types of important configuration files:
+- Read-only default configuration - core-default.xml, hdfs-default.xml, yarn-default.xml and mapred-default.xml.
+- Site-specific configuration - etc/hadoop/core-site.xml, etc/hadoop/hdfs-site.xml, etc/hadoop/yarn-site.xml and etc/hadoop/mapred-site.xml.
 
-### hdfs-site.xml
+### etc/hadoop/core-site.xml
+
+```xml
+<configuration>
+    <!-- Default file system for HDFS -->
+    <property>
+        <name>fs.defaultFS</name>
+        <value>hdfs://localhost:9000</value>
+    </property>
+
+    <!-- Temporary directory for Hadoop -->
+    <property>
+        <name>hadoop.tmp.dir</name>
+        <value>file:///home/prashu/hadoop/hadoop-3.4.1/tmp</value>
+    </property>
+</configuration>
+```
+
+### etc/hadoop/hdfs-site.xml
 
 ```xml
 <configuration>
@@ -120,23 +141,33 @@ To ensure the HDFS client works correctly, follow these steps:
 
 ```
 
-### core-site.xml
-
+### etc/hadoop/yarn-site.xml
 ```xml
 <configuration>
-    <!-- Default file system for HDFS -->
     <property>
-        <name>fs.defaultFS</name>
-        <value>hdfs://localhost:9000</value>
+        <name>yarn.nodemanager.aux-services</name>
+        <value>mapreduce_shuffle</value>
     </property>
-
-    <!-- Temporary directory for Hadoop -->
     <property>
-        <name>hadoop.tmp.dir</name>
-        <value>file:///home/prashu/hadoop/hadoop-3.4.1/tmp</value>
+        <name>yarn.nodemanager.env-whitelist</name>
+        <value>JAVA_HOME,HADOOP_COMMON_HOME,HADOOP_HDFS_HOME,HADOOP_CONF_DIR,CLASSPATH_PREPEND_DISTCACHE,HADOOP_YARN_HOME,HA>    </property>
+</configuration>
+```
+
+### etc/hadoop/mapred-site.xml
+```xml
+<configuration>
+    <property>
+        <name>mapreduce.framework.name</name>
+        <value>yarn</value>
+    </property>
+    <property>
+        <name>mapreduce.application.classpath</name>
+        <value>$HADOOP_MAPRED_HOME/share/hadoop/mapreduce/*:$HADOOP_MAPRED_HOME/share/hadoop/mapreduce/lib/*</value>
     </property>
 </configuration>
 ```
+Additionally, you can control the Hadoop scripts found in the bin/ directory of the distribution, by setting site-specific values via the etc/hadoop/hadoop-env.sh and etc/hadoop/yarn-env.sh (you can write all hadoop specific variables in this file only the precedence order will be variable in xyz-env.sh > hadoop-env.sh > default coded vars)
 
 ## Spark Configuration
 
@@ -191,6 +222,7 @@ cp $SPARK_HOME/conf/spark-env.sh.template $SPARK_HOME/conf/spark-env.sh
 ```
 
 Add the following lines (core-site.xml and hdfs-site.xml: Spark will automatically pick up Hadoop configurations from `$HADOOP_CONF_DIR`):
+## in file spark/conf/spark-env.sh
 
 ```bash
 export HADOOP_CONF_DIR=$HADOOP_CONF_DIR
@@ -213,7 +245,7 @@ When YARN is managing resources and Spark has submitted the jobs, some more Java
 
 Spark.read cannot infer schema from files starting with underscores (`_`), and Spark sometimes writes files as directories (because multiple executors write parts of the file in parallel).
 
-### Spark configs
+### Spark configs in spark/conf/spark-defaults.conf
 
 ```bash
 # Set HDFS as the default file system
@@ -225,6 +257,11 @@ spark.master yarn
 # Specify deploy mode for Spark jobs
 spark.submit.deployMode client
 ```
+there are other options too, yet to explore...
+
+#####################################################################################################################################
+################################################### Below configs are not tested  ###################################################
+#####################################################################################################################################
 
 ### Cluster Tuning for 100GB+ Datasets: // not yet tested by me
 
