@@ -35,6 +35,35 @@ Ref: [this blog](https://dev.to/samujjwaal/hadoop-installation-on-windows-10-usi
 
 Ref: [this](https://hadoop.apache.org/docs/r3.3.0/hadoop-project-dist/hadoop-common/ClusterSetup.html) and [this blog](https://www.simplilearn.com/what-is-a-hadoop-cluster-article)
 
+
+### env variables on runtime
+```
+# Hadoop environment variables
+# ~ is replaced with $HOME, change if needed in future
+
+export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+export HADOOP_HOME=$HOME/hadoop/hadoop-3.4.1
+export HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop
+export HADOOP_MAPRED_HOME=$HADOOP_HOME
+export HADOOP_COMMON_HOME=$HADOOP_HOME
+export HADOOP_HDFS_HOME=$HADOOP_HOME
+export YARN_HOME=$HADOOP_HOME
+export YARN_CONF_DIR=$HADOOP_CONF_DIR
+
+# Adding vars for Spark
+export PYSPARK_PYTHON=~/wslenv/bin/python
+export PYSPARK_DRIVER_PYTHON=~/wslenv/bin/python
+
+# Add Hadoop paths to PATH
+export PATH=$PATH:$HADOOP_HOME/bin:$HADOOP_HOME/sbin
+
+# Spark environment variables
+export SPARK_HOME=$HOME/spark/spark-3.4.4-bin-hadoop3
+export PATH=$PATH:$SPARK_HOME/bin:$SPARK_HOME/sbin
+
+# Ensure system paths are included
+export PATH=/usr/bin:/bin:$PATH
+```
 ### Service Management
 
 ```bash
