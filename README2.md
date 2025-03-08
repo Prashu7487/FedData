@@ -99,3 +99,25 @@ ls -l stop-services.sh
 # to modify the permission
 chmod 755 stop-services.sh
 ```
+## make an additional directory to help during uploading files (in the hadoop directory)
+```
+mkdir tmpdata
+```
+
+manage the permissions of each folder in the hdfs as required
+
+
+## transferring files to hdfs tmuploads directory
+```
+# from your localhost
+scp -i "fed.pem" /mnt/d/projects/datasets/health.csv ubuntu@65.2.182.17:/home/ubuntu/tmpdata
+
+# from instance move the file to tmpuploads directory in hdfs (hdfs should be running for this to work)
+hdfs dfs -put ~/tmpdata/health.csv /user/fedserver/tmpuploads/
+
+hdfs dfs -ls /user/fedserver/tmpuploads
+```
+
+## Additional
+port forwarding can be done like this
+ssh -i your-key.pem -L 7077:localhost:7077 -L 8080:localhost:8080 ubuntu@your-ec2-public-ip
