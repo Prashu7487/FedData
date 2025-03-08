@@ -35,6 +35,8 @@ Ref: [this blog](https://dev.to/samujjwaal/hadoop-installation-on-windows-10-usi
 
 Ref: [this](https://hadoop.apache.org/docs/r3.3.0/hadoop-project-dist/hadoop-common/ClusterSetup.html) and [this blog](https://www.simplilearn.com/what-is-a-hadoop-cluster-article)
 
+Ref: [medium blog](https://awstip.com/setting-up-multi-node-apache-hadoop-cluster-on-aws-ec2-from-scratch-2e9caa6881bd)
+
 
 ### env variables on runtime
 ```
@@ -87,6 +89,8 @@ WARNING: links may change as per port availability, and use your public IP in pl
 - **HDFS NameNode**: http://localhost:9870/dfshealth.html#tab-overview or 9868 (command `ss -tuln`)
 
 ### HDFS Operations from CLI
+- sample commands
+- put command won't work if ports are not exposed
 
 ```bash
 # make directory tmpuploads, uploads, processed, tmp, data/namenode, data/datanode
@@ -97,6 +101,7 @@ hdfs dfs -mkdir /user/cdis/uploads
 hdfs dfs -mkdir /user/cdis/processed
 hdfs dfs -ls /user/cdis/processed
 hdfs dfs -put /mnt/d/projects/datasets/health.csv /user/prashu/tmpuploads/health.csv # for hadoop on wsl, change accordingly
+hdfs dfs -put /mnt/d/projects/datasets/health2.csv /user/fedserver/tmpuploads/health2.csv
 hdfs dfs -rm -r /path/to/remove # directory or file, -r for recursive
 
 # WARNING: Format namenode only when necessary
@@ -126,13 +131,14 @@ Hadoop’s Java configuration is driven by two types of important configuration 
 - NOTE: ubuntu is username (check by whoami)
   
 ### etc/hadoop/core-site.xml
+Instead of localhost 0.0.0.0 used to accept requests from all network interfaces.
 
 ```xml
 <configuration>
     <!-- Default file system for HDFS -->
     <property>
         <name>fs.defaultFS</name>
-        <value>hdfs://localhost:9000</value>
+        <value>hdfs://0.0.0.0:9000</value>
     </property>
 
     <!-- Temporary directory for Hadoop -->
@@ -265,8 +271,8 @@ Add the following lines (core-site.xml and hdfs-site.xml: Spark will automatical
 ```bash
 export HADOOP_CONF_DIR=$HADOOP_CONF_DIR
 export YARN_CONF_DIR=$YARN_CONF_DIR
-export SPARK_MASTER_HOST=localhost
-export SPARK_LOCAL_IP=127.0.0.1
+export SPARK_MASTER_HOST=localhost # or (0.0.0.0) to allow connection from everywhere
+export SPARK_LOCAL_IP=127.0.0.1  # or (0.0.0.0) to allow connection from everywhere
 
 # Add the right venv path to be used when spark workers are scheduled (not yet tested)
 export PYSPARK_PYTHON=~/wslenv/bin/python
