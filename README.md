@@ -106,6 +106,9 @@ hdfs dfs -rm -r /path/to/remove # directory or file, -r for recursive
 
 # WARNING: Format namenode only when necessary
 hdfs namenode -format
+
+#verify running hdfs
+hdfs dfsadmin -report
 ```
 
 ## Notes for HDFS setup
