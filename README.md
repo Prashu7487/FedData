@@ -165,7 +165,13 @@ Instead of localhost 0.0.0.0 used to accept requests from all network interfaces
     <property>
       <name>dfs.webhdfs.enabled</name>
       <value>true</value>
-  </property>
+    </property>
+
+    # 0.0.0.0 means "accept connections from anywhere", not in current setup of mine but maybe needed ahead
+    <property>
+      <name>dfs.namenode.rpc-address</name>
+      <value>0.0.0.0:9000</value>
+    </property>
 
     <!-- Directory for NameNode metadata -->
     <property>
