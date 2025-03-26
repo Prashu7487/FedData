@@ -167,7 +167,7 @@ Instead of localhost 0.0.0.0 used to accept requests from all network interfaces
       <value>true</value>
     </property>
 
-    # 0.0.0.0 means "accept connections from anywhere", not in current setup of mine but maybe needed ahead
+     <!--  0.0.0.0 means "accept connections from anywhere", not in current setup of mine but maybe needed ahead -->
     <property>
       <name>dfs.namenode.rpc-address</name>
       <value>0.0.0.0:9000</value>
