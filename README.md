@@ -229,9 +229,9 @@ JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
 Download Spark from the official website. Choose a version compatible with the Hadoop setup (e.g., Spark 3.4.x for Hadoop 3.4.x).
 
 ```bash
-wget https://dlcdn.apache.org/spark/spark-3.4.4/spark-3.4.4-bin-hadoop3.tgz
+wget https://dlcdn.apache.org/spark/spark-3.5.5/spark-3.5.5-bin-hadoop3.tgz
 mkdir ~/spark
-tar -xvzf spark-3.4.4-bin-hadoop3.tgz -C ~/spark
+tar -xvzf spark-3.5.5-bin-hadoop3.tgz -C ~/spark
 ```
 
 ### Environment Variables
@@ -239,26 +239,32 @@ tar -xvzf spark-3.4.4-bin-hadoop3.tgz -C ~/spark
 ```bash
 ## Add to `~/.bashrc` then reload the shell by `source ~/.bashrc`:
 
-export SPARK_HOME=~/spark
+export SPARK_HOME=~/spark/spark-3.5.5-bin-hadoop3
 export PATH=$SPARK_HOME/bin:$PATH
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$HADOOP_HOME/lib/native  # For native libs
 export PYSPARK_PYTHON=~/wslenv/bin/python
+
 ```
 
-Verify Spark Installation: Run the following command to check the Spark installation:
-
-```bash
-spark-shell
+### Reload env-
+```
+source ~/.bashrc
 ```
 
-This should open an interactive shell.
+###  Link Hadoop Configurations to Spark
+```
+# Symlink Hadoop configs to Spark's conf directory
+ln -s $HADOOP_CONF_DIR/core-site.xml $SPARK_HOME/conf/
+ln -s $HADOOP_CONF_DIR/hdfs-site.xml $SPARK_HOME/conf/
+```
 
-### Service Management
+### Service Management of spark
 
 ```bash
 # start master and worker
-spark/sbin/start-all.sh
+spark/spark-3.5.5-bin-hadoop3/sbin/start-all.sh
 # stop master and worker
-spark/sbin/stop-all.sh
+spark/spark-3.5.5-bin-hadoop3/sbin/stop-all.sh
 ```
 
 ## Additional Notes for Spark setup
@@ -364,6 +370,12 @@ export PYSPARK_PYTHON=~/wslenv/bin/python
 export PYSPARK_DRIVER_PYTHON=~/wslenv/bin/python
 ```
 
+### For pyspark shell to experiment quickly-
+```
+pyspark --master yarn --deploy-mode client
+
+```
+
 ## Troubleshooting Guide
 
 ### Common Issues & Solutions
@@ -391,10 +403,194 @@ jps # Verify running Java processes, FedData will work correctly only if all exp
 ## Additional resources
 
 WARNING: may/may not be used in this project
-Ref:
-
+Ref: 
 [Connection refused error](https://cwiki.apache.org/confluence/display/HADOOP2/ConnectionRefused)
 
 [Connection refused error](https://stackoverflow.com/questions/28661285/hadoop-cluster-setup-java-net-connectexception-connection-refused)
 
 [Upload files in fastAPI](https://www.youtube.com/watch?v=y_JPb8vOh28&ab_channel=CodeCollider)
+
+[For spark use with files on AWS](https://medium.com/@bharadwajaryan30/handling-big-data-with-pyspark-and-aws-s3-f2a3f28419a9)
+[spark + S3](https://stackoverflow.com/questions/44411493/java-lang-noclassdeffounderror-org-apache-hadoop-fs-storagestatistics)
+
+
+###############################################################################################
+## temp notes: will edit later:
+
+Set-up aws cli:
+```
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+unzip awscliv2.zip    # install unzip if not already
+sudo ./aws/install
+```
+verify installation-
+```
+which aws
+aws --version
+```
+
+Setting AWS credentials (Keep these secret)-
+Brief desc to find/create these AWS credentials (your username should have proper permissions to create an access key)
+
+Login to AWS Console
+Go to the "IAM" service
+Click "Users" from the left sidebar
+Click (not select) on your username
+Go to the "Security credentials" tab
+Scroll down to Access keys section
+Click "Create access key"
+Choose the Command Line Interface (CLI)
+Click "Next", assign some name then "Create access key"
+You’ll be shown:
+✅ Access Key ID
+✅ Secret Access Key (only once — save it somewhere safe)
+📂 You can download a CSV file with them for safekeeping.
+```
+aws configure
+
+# Now, you'll be prompted for-
+
+AWS Access Key ID:     <your-access-key>
+AWS Secret Access Key: <your-secret-key>
+Default region name:  <your-region>    
+Default output format: json      
+```
+Install Required JARs for Hadoop + Spark to Talk to S3 and place these jars into classpath
+Note:
+You need to install these JARs and update config files accordingly and these are highly version sensitive (the below ones are for Hadoop 3.4.1 and Spark 3.5.5, with PySpark 3.5.1)
+```
+wget https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-aws/3.4.1/hadoop-aws-3.4.1.jar -P $HADOOP_HOME/share/hadoop/common/lib/
+
+# For AWS SDKv1 use this and "com.amazonaws.auth.DefaultAWSCredentialsProviderChain" class as credential provider
+wget https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-bundle/1.11.1026/aws-java-sdk-bundle-1.11.1026.jar -P $HADOOP_HOME/share/hadoop/common/lib/
+
+# OR, for  AWS SDKv2 (hadoop 3.4+)  use this and "software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider" as credential provider, however this doesn't work sometimes
+wget https://repo1.maven.org/maven2/software/amazon/awssdk/bundle/2.24.6/bundle-2.24.6.jar -P $HADOOP_HOME/share/hadoop/common/lib/
+
+# verify these jars presence -
+
+```
+Update core-site.xml in 
+
+```
+<configuration>
+     <!-- for AWS and distcp -->
+    <property>
+        <name>fs.s3a.impl</name>
+        <value>org.apache.hadoop.fs.s3a.S3AFileSystem</value>
+    </property>
+
+    <property>
+        <name>fs.s3a.aws.credentials.provider</name>
+        <value>com.amazonaws.auth.DefaultAWSCredentialsProviderChain</value>
+    </property>
+
+    <property>
+        <name>fs.s3a.fast.upload</name>
+        <value>true</value>
+    </property>
+
+    <property>
+        <name>fs.s3a.connection.maximum</name>
+        <value>100</value>
+    </property>
+
+</configuration>
+```
+
+Check AWS reachability-
+
+```
+hadoop fs -ls s3a://qpd-data/
+hadoop distcp hdfs:///user/prashu/data/ s3a://qpd-data/temp/   # (adjust path)
+
+```
+
+For writing to S3 using spark-
+
+### Add AWS access credentials (either through awscli or in ~/.bashrc like below)
+```
+export AWS_ACCESS_KEY_ID="YOUR_ACCESS_KEY"
+export AWS_SECRET_ACCESS_KEY="YOUR_SECRET_KEY"
+```
+
+### install required jar files on hadoop (extreme version sensitive)
+use this site to decide the AWS SDK jar compatible: [this](https://mvnrepository.com/artifact/org.apache.hadoop/hadoop-aws/3.4.1)
+Other refs: 
+[apache docs](https://hadoop.apache.org/docs/r3.4.0/hadoop-aws/tools/hadoop-aws/index.html#General_S3A_Client_configuration)
+[apache docs](https://hadoop.apache.org/docs/r3.4.1/hadoop-aws/tools/hadoop-aws/troubleshooting_s3a.html)
+[stack overflow](https://stackoverflow.com/questions/44411493/java-lang-noclassdeffounderror-org-apache-hadoop-fs-storagestatistics)
+
+```
+
+## install only one of the below (either SDKv1 jar or SDKv2 jar, and be consistent with it in furthur commands)
+# if your hadoop is for SDKv1
+wget https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-bundle/1.12.262/aws-java-sdk-bundle-1.12.262.jar -P $SPARK_HOME/jars/
+
+#if your hadoop is for SDKv2 (hadoop 3.4.x), "aws-java-sdk-bundle-1.12.262.jar" also works for hadoop 3.4.x with appropriate credential resolver class
+wget https://repo1.maven.org/maven2/software/amazon/awssdk/bundle/2.24.6/bundle-2.24.6.jar -P $HADOOP_HOME/share/hadoop/common/lib/
+
+# install all from here
+hadoop-common-3.4.1.jar in path $HADOOP_HOME/share/hadoop/common/lib
+
+# this will be there initially (download if not avail)
+guava-27.0-jre.jar
+```
+
+### Replace All Hadoop JARs in Spark with 3.4.1 Versions
+```
+mkdir -p ~/spark-hadoop-jars-backup
+mv $SPARK_HOME/jars/hadoop-* ~/spark-hadoop-jars-backup
+
+# Copy Hadoop 3.4.1 JARs from your Hadoop installation to spark jars
+HADOOP_LIBS_DIR=$HADOOP_HOME/share/hadoop
+cp $HADOOP_LIBS_DIR/common/hadoop-common-3.4.1.jar $SPARK_HOME/jars/
+cp $HADOOP_LIBS_DIR/common/lib/hadoop-aws-3.4.1.jar $SPARK_HOME/jars/
+cp $HADOOP_LIBS_DIR/common/lib/guava-27.0-jre.jar $SPARK_HOME/jars/
+cp $HADOOP_LIBS_DIR/common/lib/bundle-2.24.6.jar $SPARK_HOME/jars/ (or aws-java-sdk-bundle-1.12.262.jar as per prev step)
+```
+
+### Add AWS JARs to Spark Classpath
+```
+# Example paths (adjust based on your Hadoop setup):
+HADOOP_LIB_DIR=$HADOOP_HOME/share/hadoop/tools/lib/
+
+# Copy required JARs
+cp $HADOOP_LIB_DIR/hadoop-aws-3.4.1.jar $SPARK_HOME/jars/
+cp $HADOOP_LIB_DIR/aws-java-sdk-bundle-1.12.262.jar $SPARK_HOME/jars/
+```
+
+### Copy spark-jars to hdfs to avoid warning on every job submit
+```
+# Upload Spark JARs to HDFS
+hdfs dfs -mkdir -p /spark-jars
+hdfs dfs -put $SPARK_HOME/jars/* /spark-jars/
+
+# Add to spark-defaults.conf by echo command
+echo "spark.yarn.jars hdfs:///spark-jars/*" >> $SPARK_HOME/conf/spark-defaults.conf
+```
+
+### Accessing spark UIs
+```
+Check YARN ResourceManager UI for the application logs by
+http://<yarn-resourcemanager-host>:8088.
+
+To access Spark UI directly:
+Use the correct IP (from SPARK_LOCAL_IP in spark-env.sh) in the URL.
+Allow port 4040 in your firewall (sudo ufw allow 4040)
+```
+
+### For accessing spark shell 
+```
+spark-shell --master yarn
+
+# Test-
+val data = Seq(("Prashu", 25), ("Spark", 10))
+val df = data.toDF("Name", "Age")
+df.show()
+```
+
+# yet to include env vars
+
+
+
