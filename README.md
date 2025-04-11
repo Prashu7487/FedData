@@ -42,7 +42,6 @@ Ref: [medium blog](https://awstip.com/setting-up-multi-node-apache-hadoop-cluste
 ```
 # Hadoop environment variables
 # ~ is replaced with $HOME, change if needed in future
-
 export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
 export HADOOP_HOME=$HOME/hadoop/hadoop-3.4.1
 export HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop
@@ -50,7 +49,9 @@ export HADOOP_MAPRED_HOME=$HADOOP_HOME
 export HADOOP_COMMON_HOME=$HADOOP_HOME
 export HADOOP_HDFS_HOME=$HADOOP_HOME
 export YARN_HOME=$HADOOP_HOME
-export YARN_CONF_DIR=$HADOOP_HOME/etc/hadoop
+export YARN_CONF_DIR=$HADOOP_CONF_DIR
+# include native files
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$HADOOP_HOME/lib/native 
 
 # Adding vars for Spark
 export PYSPARK_PYTHON=~/wslenv/bin/python
@@ -60,7 +61,7 @@ export PYSPARK_DRIVER_PYTHON=~/wslenv/bin/python
 export PATH=$PATH:$HADOOP_HOME/bin:$HADOOP_HOME/sbin
 
 # Spark environment variables
-export SPARK_HOME=$HOME/spark/spark-3.4.4-bin-hadoop3
+export SPARK_HOME=$HOME/spark/spark-3.5.5-bin-hadoop3
 export PATH=$PATH:$SPARK_HOME/bin:$SPARK_HOME/sbin
 
 # Ensure system paths are included
@@ -79,6 +80,7 @@ You can also start individual services like this:
 ```bash
 sbin/start-dfs.sh
 sbin/start-yarn.sh
+# ..and others as needed
 ```
 
 ### Web Interfaces
@@ -590,7 +592,111 @@ val df = data.toDF("Name", "Age")
 df.show()
 ```
 
-# yet to include env vars
+# Update config file for spark
+```
+nano $SPARK_HOME/conf/spark-defaults.conf 
+```
+and paste this:
+
+```
+# HDFS as default filesystem
+spark.hadoop.fs.defaultFS hdfs://0.0.0.0:9000
+
+# S3A configuration
+# spark.hadoop.fs.s3a.impl org.apache.hadoop.fs.s3a.S3AFileSystem
+# spark.hadoop.fs.s3a.aws.credentials.provider org.apache.hadoop.fs.s3a.auth.AWSCredentialProviderList
+# spark.hadoop.fs.s3a.aws.credentials.provider org.apache.hadoop.fs.s3a.SimpleAWSCredentialsProvider
+spark.hadoop.fs.s3a.endpoint s3.amazonaws.com
+
+# in core-site: com.amazonaws.auth.DefaultAWSCredentialsProviderChain
+# Performance optimizations (optional)
+spark.hadoop.fs.s3a.connection.maximum 1000
+spark.hadoop.fs.s3a.fast.upload true
+
+# spark.hadoop.fs.s3a.aws.credentials.provider software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider
+spark.hadoop.fs.s3a.aws.credentials.provider com.amazonaws.auth.DefaultAWSCredentialsProviderChain
+
+spark.hadoop.fs.s3a.impl org.apache.hadoop.fs.s3a.S3AFileSystem
+spark.yarn.jars hdfs:///spark-jars/*
+
+```
+
+again,
+```
+nano $SPARK_HOME/conf/spark-defaults.conf
+```
+
+and paste this at last of the file:
+```
+export HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop
+export LD_LIBRARY_PATH=$HADOOP_HOME/lib/native:$LD_LIBRARY_PATH  # Native Hadoop libs
+
+# Include Hadoop's classpath to avoid version conflicts
+export SPARK_DIST_CLASSPATH=$(hadoop classpath)
+export YARN_CONF_DIR=$HADOOP_CONF_DIR
+
+# private IP (hostname -I)
+export SPARK_LOCAL_IP=127.0.0.1
+export SPARK_MASTER_HOST=localhost
+
+```
+
+Note: Verify that core-site.xml and hdfs-site.xml will be present there becuase of linking done in earlier steps.
+
+### Creating a script to start and stop all hadoop and spark services at once
+start-services.sh
+```
+nano start-services.sh
+
+# copy this bash script
+#!/bin/bash
+
+echo "Starting hadoop and spark services"
+
+hadoop/hadoop-3.4.1/sbin/start-all.sh
+
+spark/spark-3.5.5-bin-hadoop3/sbin/start-all.sh
+
+echo "Started hadoop and spark services"
+
+# give execution permission
+chmod +x ./start-services.sh
+
+# run this like
+./start-services.sh
+```
+
+stop-services.sh
+
+```
+nano stop-services.sh
+
+# copy this bash script
+#!/bin/bash
+
+echo "Stopping hadoop and spark services"
+
+hadoop/hadoop-3.4.1/sbin/stop-all.sh
+
+spark/spark-3.5.5-bin-hadoop3/sbin/stop-all.sh
+
+echo "Stopped hadoop and spark services"
+
+# give execution permission
+chmod +x ./stop-services.sh
+
+# excution command
+./stop-services.sh
+```
+
+
+
+
+
+
+
+
+
 
 
 
