@@ -434,19 +434,20 @@ aws --version
 Setting AWS credentials (Keep these secret)-
 Brief desc to find/create these AWS credentials (your username should have proper permissions to create an access key)
 
-Login to AWS Console
-Go to the "IAM" service
-Click "Users" from the left sidebar
-Click (not select) on your username
-Go to the "Security credentials" tab
-Scroll down to Access keys section
-Click "Create access key"
-Choose the Command Line Interface (CLI)
-Click "Next", assign some name then "Create access key"
-You’ll be shown:
-✅ Access Key ID
-✅ Secret Access Key (only once — save it somewhere safe)
-📂 You can download a CSV file with them for safekeeping.
+- Login to AWS Console
+- Go to the "IAM" service
+- Click "Users" from the left sidebar
+- Click (not select) on your username
+- Go to the "Security credentials" tab
+- Scroll down to Access keys section
+- Click "Create access key"
+- Choose the Command Line Interface (CLI)
+- Click "Next", assign some name then "Create access key"
+- You’ll be shown:
+  - ✅ Access Key ID
+  - ✅ Secret Access Key (only once — save it somewhere safe)
+  - 📂 You can download a CSV file with them for safekeeping.
+    
 ```
 aws configure
 
@@ -527,7 +528,7 @@ Other refs:
 
 ## install only one of the below (either SDKv1 jar or SDKv2 jar, and be consistent with it in furthur commands)
 # if your hadoop is for SDKv1
-wget https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-bundle/1.12.262/aws-java-sdk-bundle-1.12.262.jar -P $SPARK_HOME/jars/
+wget https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-bundle/1.12.262/aws-java-sdk-bundle-1.12.262.jar -P $HADOOP_HOME/share/hadoop/common/lib/
 
 #if your hadoop is for SDKv2 (hadoop 3.4.x), "aws-java-sdk-bundle-1.12.262.jar" also works for hadoop 3.4.x with appropriate credential resolver class
 wget https://repo1.maven.org/maven2/software/amazon/awssdk/bundle/2.24.6/bundle-2.24.6.jar -P $HADOOP_HOME/share/hadoop/common/lib/
@@ -621,7 +622,7 @@ spark.yarn.jars hdfs:///spark-jars/*
 
 ```
 
-again,
+################## below is not yet present in saprk-default.conf ############################
 ```
 nano $SPARK_HOME/conf/spark-defaults.conf
 ```
